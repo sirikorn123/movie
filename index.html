@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>💌 มีจดหมายมาส่งถึงพี่...</title>
+  <!-- Google Fonts: Mali (น่ารัก อ่อนโยน เข้ากับลายมือการ์ด) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Mali:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    body {
+      font-family: 'Mali', cursive, sans-serif;
+      min-height: 100vh;
+      min-height: 100dvh;
+      width: 100vw;
+      background: radial-gradient(circle at 50% 25%, #ffdde3 0%, #fed0d7 50%, #feb3bb 100%);
+      overflow-x: hidden;
+      overflow-y: auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #6d414a;
+      position: relative;
+    }
+
+    /* Background floating decorations */
+    .bg-decorations {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .heart-particle {
+      position: absolute;
+      color: rgba(255, 138, 161, 0.45);
+      animation: floatUp linear infinite;
+    }
+
+    .sparkle {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: radial-gradient(circle, #fff 20%, rgba(255,255,255,0) 70%);
+      border-radius: 50%;
+      animation: twinkle 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(105vh) scale(0.6) rotate(0deg);
+        opacity: 0;
+      }
+      20% {
+        opacity: 0.8;
+      }
+      80% {
+        opacity: 0.8;
+      }
+      100% {
+        transform: translateY(-10vh) scale(1.1) rotate(45deg);
+        opacity: 0;
+      }
+    }
+
+    @keyframes twinkle {
+      0% { opacity: 0.2; transform: scale(0.7); }
+      100% { opacity: 0.9; transform: scale(1.3); }
+    }
+
+    /* Main Container - Fullscreen feel, NO outer border frame */
+    .app-viewport {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 480px;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 20px;
+      text-align: center;
+    }
+
+    /* ===================================================
+       STAGE 1: LOADING & CAT POP-UP (10 วินาที)
+       =================================================== */
+    #loading-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      animation: fadeIn 0.8s ease-out;
+    }
+
+    /* Cat Pop-up Container with Bouncy Entrance */
+    .cat-popup-wrapper {
+      position: relative;
+      width: 320px;
+      max-width: 90vw;
+      height: 310px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 24px;
+      animation: catSpringEntrance 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    @keyframes catSpringEntrance {
+      0% {
+        opacity: 0;
+        transform: scale(0.2) translateY(120px) rotate(-6deg);
+      }
+      60% {
+        opacity: 1;
+        transform: scale(1.08) translateY(-15px) rotate(2deg);
+      }
+      80% {
+        transform: scale(0.97) translateY(5px) rotate(-1deg);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0) rotate(0deg);
+      }
+    }
+
+    /* Continuous Gentle Cat Hover Animation */
+    .cat-image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 14px 25px rgba(230, 110, 140, 0.28));
+      animation: catGentleBob 3.5s ease-in-out infinite alternate;
+      /* Soft mask to blend edges smoothly into the background */
+      mask-image: radial-gradient(ellipse 92% 92% at 50% 50%, black 82%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 92% 92% at 50% 50%, black 82%, transparent 100%);
+    }
+
+    @keyframes catGentleBob {
+      0% {
+        transform: translateY(0px) rotate(0deg);
+      }
+      50% {
+        transform: translateY(-8px) rotate(1deg);
+      }
+      100% {
+        transform: translateY(0px) rotate(-1deg);
+      }
+    }
+
+    /* Floating mini hearts around the cat */
+    .cat-heart {
+      position: absolute;
+      font-size: 1.4rem;
+      pointer-events: none;
+      animation: popHeart 2.5s ease-in-out infinite;
+    }
+    .cat-heart.h1 { top: 15%; left: 10%; animation-delay: 0.3s; }
+    .cat-heart.h2 { top: 12%; right: 12%; animation-delay: 1.1s; }
+    .cat-heart.h3 { bottom: 25%; right: 8%; animation-delay: 1.8s; }
+    .cat-heart.h4 { top: 40%; left: 5%; animation-delay: 0.7s; }
+
+    @keyframes popHeart {
+      0% { transform: scale(0.7) translateY(0); opacity: 0.3; }
+      50% { transform: scale(1.2) translateY(-10px); opacity: 0.9; }
+      100% { transform: scale(0.7) translateY(0); opacity: 0.3; }
+    }
+
+    /* Dynamic Loading Title */
+    .loading-title {
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: #7a3e49;
+      margin-bottom: 14px;
+      letter-spacing: 0.3px;
+      min-height: 2em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .percent-number {
+      font-weight: 700;
+      color: #d84568;
+      margin-left: 6px;
+    }
+
+    /* Progress Bar Pill Container */
+    .progress-track {
+      width: 100%;
+      max-width: 310px;
+      height: 26px;
+      background: rgba(255, 255, 255, 0.75);
+      border: 2px solid #fbbec8;
+      border-radius: 999px;
+      padding: 3px;
+      box-shadow: 0 4px 14px rgba(220, 120, 145, 0.15), inset 0 2px 4px rgba(0, 0, 0, 0.04);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    /* Progress Bar Fill */
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #ff9eb5 0%, #f77091 100%);
+      border-radius: 999px;
+      position: relative;
+      transition: width 0.1s linear;
+      box-shadow: 0 2px 8px rgba(247, 112, 145, 0.35);
+    }
+
+    /* Gloss shimmer effect over progress bar */
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(
+        90deg,
+        rgba(255,255,255,0) 0%,
+        rgba(255,255,255,0.45) 50%,
+        rgba(255,255,255,0) 100%
+      );
+      animation: shimmer 1.8s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    /* Progress inner text label */
+    .progress-text {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #8b3c4e;
+      pointer-events: none;
+    }
+
+    /* Subtext under progress */
+    .loading-subtext {
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: #884b57;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.4s ease;
+    }
+
+    /* ===================================================
+       STAGE 2: THE INVITATION CARD (เปิดการ์ดหลังโหลดครบ)
+       =================================================== */
+    #invitation-stage {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      animation: cardUnfold 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    @keyframes cardUnfold {
+      0% {
+        opacity: 0;
+        transform: scale(0.65) translateY(60px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .invite-card {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 32px;
+      padding: 28px 22px 26px;
+      box-shadow: 0 16px 36px rgba(224, 112, 140, 0.22), 0 2px 10px rgba(255, 255, 255, 0.7) inset;
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      position: relative;
+    }
+
+    .card-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #ffe3ea;
+      color: #d13d63;
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 8px rgba(209, 61, 99, 0.12);
+    }
+
+    .card-title {
+      font-size: 1.55rem;
+      font-weight: 700;
+      color: #642b37;
+      line-height: 1.35;
+      margin-bottom: 10px;
+    }
+
+    .card-desc {
+      font-size: 1.05rem;
+      color: #8c4c5a;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    /* Sweet Movie Ticket Component */
+    .movie-ticket {
+      background: linear-gradient(135deg, #fff5f7 0%, #ffe9ef 100%);
+      border-radius: 20px;
+      padding: 16px 18px;
+      margin-bottom: 22px;
+      border: 1.5px dashed #f5a8b9;
+      position: relative;
+      text-align: left;
+    }
+
+    /* Ticket notch punches */
+    .movie-ticket::before, .movie-ticket::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 18px;
+      height: 18px;
+      background: #fecfd6;
+      border-radius: 50%;
+      transform: translateY(-50%);
+    }
+    .movie-ticket::before { left: -9px; }
+    .movie-ticket::after { right: -9px; }
+
+    .ticket-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+      color: #6d3944;
+    }
+    .ticket-row:last-child {
+      margin-bottom: 0;
+    }
+    .ticket-icon {
+      font-size: 1.25rem;
+      width: 26px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .ticket-label {
+      font-weight: 600;
+      color: #b73857;
+    }
+
+    /* Movie mood tags */
+    .movie-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+      justify-content: center;
+    }
+    .tag-item {
+      background: #fff;
+      color: #8f4656;
+      font-size: 0.78rem;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid #fed2dc;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tag-item.active, .tag-item:hover {
+      background: #ff7696;
+      color: #fff;
+      border-color: #ff7696;
+      transform: translateY(-2px);
+    }
+
+    /* Interactive Buttons Area */
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+      margin-top: 10px;
+      position: relative;
+    }
+
+    /* Primary Accept Button */
+    .btn-accept {
+      background: linear-gradient(135deg, #ff6584 0%, #ee3a65 100%);
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      padding: 15px 24px;
+      font-family: 'Mali', cursive;
+      font-size: 1.25rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 22px rgba(238, 58, 101, 0.38), 0 2px 4px rgba(255, 255, 255, 0.4) inset;
+      transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-accept:hover, .btn-accept:active {
+      transform: scale(1.04);
+      box-shadow: 0 10px 26px rgba(238, 58, 101, 0.5);
+    }
+
+    /* Playful Reject Button (Runaway / Dodge) */
+    .btn-reject {
+      background: rgba(255, 255, 255, 0.85);
+      color: #a45868;
+      border: 1.5px solid #f6bac6;
+      border-radius: 999px;
+      padding: 12px 20px;
+      font-family: 'Mali', cursive;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+      touch-action: manipulation;
+    }
+
+    /* Mini cat on the card header */
+    .invite-cat-avatar {
+      width: 76px;
+      height: 76px;
+      margin: -50px auto 10px;
+      background: #fff;
+      border-radius: 50%;
+      padding: 4px;
+      box-shadow: 0 8px 20px rgba(220, 100, 130, 0.25);
+      border: 3px solid #ffd3de;
+      overflow: hidden;
+      animation: avatarPop 0.6s ease-out;
+    }
+    .invite-cat-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      border-radius: 50%;
+    }
+
+    @keyframes avatarPop {
+      0% { transform: scale(0); }
+      80% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+
+    /* ===================================================
+       STAGE 3: SUCCESS CELEBRATION MODAL (เมื่อกดตกลง)
+       =================================================== */
+    .celebration-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(100, 30, 48, 0.45);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 20px;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .celebration-box {
+      background: #ffffff;
+      border-radius: 30px;
+      padding: 30px 24px;
+      max-width: 380px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 45px rgba(180, 50, 80, 0.35);
+      border: 2px solid #ffd4df;
+      animation: scaleUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .celebration-box h2 {
+      color: #d83d63;
+      font-size: 1.6rem;
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+
+    .celebration-box p {
+      color: #6d414a;
+      font-size: 1.05rem;
+      line-height: 1.6;
+      margin-bottom: 22px;
+    }
+
+    .share-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn-line {
+      background: #06C755;
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      padding: 13px 20px;
+      font-family: 'Mali', cursive;
+      font-size: 1.1rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 6px 18px rgba(6, 199, 85, 0.3);
+      cursor: pointer;
+    }
+
+    .btn-copy {
+      background: #fff0f3;
+      color: #b83f5e;
+      border: 1.5px solid #ffccd8;
+      border-radius: 999px;
+      padding: 12px 20px;
+      font-family: 'Mali', cursive;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Sound Control Button */
+    .sound-btn {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 50;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(8px);
+      border: 1.5px solid #ffccd7;
+      border-radius: 999px;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(220, 100, 130, 0.18);
+      transition: all 0.2s;
+    }
+    .sound-btn:active {
+      transform: scale(0.92);
+    }
+
+    /* Toast Notification */
+    .toast-msg {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #732a39;
+      color: #fff;
+      padding: 10px 22px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      z-index: 200;
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      pointer-events: none;
+    }
+    .toast-msg.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes scaleUp {
+      0% { transform: scale(0.7); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Canvas for Confetti */
+    #confetti-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 150;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Animated Hearts & Sparkles -->
+  <div class="bg-decorations" id="bg-decorations"></div>
+
+  <!-- Sound Toggle Button -->
+  <button class="sound-btn" id="soundBtn" title="เปิด/ปิดเสียงเอฟเฟกต์">🔔</button>
+
+  <!-- Confetti Canvas -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Main Clean App Viewport (No outer border frame) -->
+  <main class="app-viewport">
+
+    <!-- ===================================================
+         STAGE 1: LOADING & CAT POPUP SCREEN (10 SECONDS)
+         =================================================== -->
+    <section id="loading-stage">
+      
+      <!-- Cat Envelope Graphic with Pop-Up Spring Physics -->
+      <div class="cat-popup-wrapper">
+        <span class="cat-heart h1">💖</span>
+        <span class="cat-heart h2">✨</span>
+        <span class="cat-heart h3">💕</span>
+        <span class="cat-heart h4">🌸</span>
+        <img src="assets/cat_envelope_clean.png" alt="น้องแมวในซองจดหมายชวนไปดูหนัง" class="cat-image" id="catImg">
+      </div>
+
+      <!-- Loading Title with Dynamic Progress -->
+      <h1 class="loading-title" id="loadingStatusText">
+        กำลังเปิดซองจดหมายชวนพี่... <span class="percent-number" id="percentNumber">0%</span>
+      </h1>
+
+      <!-- Progress Track -->
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+        <div class="progress-text" id="progressOverlayText">0%</div>
+      </div>
+
+      <!-- Subtitle -->
+      <p class="loading-subtext" id="loadingSubtext">
+        <span>รอแป๊บนึงน้า มีเรื่องอยากชวน</span>
+        <span style="font-size: 1.25rem;">🥺💌</span>
+      </p>
+
+    </section>
+
+    <!-- ===================================================
+         STAGE 2: INVITATION CARD (UNFOLDS AFTER 10s)
+         =================================================== -->
+    <section id="invitation-stage">
+      <div class="invite-card">
+        
+        <!-- Cat Avatar in header -->
+        <div class="invite-cat-avatar">
+          <img src="assets/cat_envelope_clean.png" alt="Cat Avatar">
+        </div>
+
+        <div class="card-badge">💌 จดหมายเชิญพิเศษถึงพี่</div>
+        <h2 class="card-title">เสาร์-อาทิตย์นี้ว่างไหมคะ?<br>ไปดูหนังด้วยกันนะ! 🎬🍿</h2>
+        <p class="card-desc">
+          มีหนังน่าดูเข้าโรงเพียบเลยยย<br>
+          อยากชวนพี่ไปนั่งดูด้วยกันจัง มีตั๋วรอไว้แล้วน้า 🥺✨
+        </p>
+
+        <!-- Movie Ticket Preview -->
+        <div class="movie-ticket">
+          <div class="ticket-row">
+            <span class="ticket-icon">🎟️</span>
+            <div><span class="ticket-label">ที่นั่ง:</span> Sweet Couple VIP Seat (2 ที่นั่ง)</div>
+          </div>
+          <div class="ticket-row">
+            <span class="ticket-icon">🎬</span>
+            <div><span class="ticket-label">เรื่อง:</span> <span id="selectedMovieText">เรื่องอะไรก็ได้ที่พี่อยากดูเลย 🎞️</span></div>
+          </div>
+          <div class="ticket-row">
+            <span class="ticket-icon">🍿</span>
+            <div><span class="ticket-label">ของกิน:</span> ป๊อปคอร์น + น้ำหวาน เราเลี้ยงเอง! 🥤</div>
+          </div>
+
+          <!-- Quick Movie Mood Tags -->
+          <div class="movie-tags">
+            <span class="tag-item active" onclick="selectMovie(this, 'หนังรักโรแมนติก อบอุ่นหัวใจ 💕')">โรแมนติก 💕</span>
+            <span class="tag-item" onclick="selectMovie(this, 'หนังแอนิเมชัน น่ารักสดใส 🐱')">แอนิเมชัน 🐱</span>
+            <span class="tag-item" onclick="selectMovie(this, 'หนังตลก ฮากระจาย คลายเครียด 🤣')">คอมเมดี้ 🤣</span>
+            <span class="tag-item" onclick="selectMovie(this, 'หนังผี สยองขวัญ ขอยืมมือจับหน่อย 👻')">หนังผี 👻</span>
+            <span class="tag-item" onclick="selectMovie(this, 'หนังแอ็กชันสุดมันส์ ตื่นเต้นเร้าใจ 💥')">แอ็กชัน 💥</span>
+          </div>
+        </div>
+
+        <!-- Decision Buttons -->
+        <div class="action-buttons">
+          <button class="btn-accept" id="btnAccept">
+            <span>ไปสิ! ไปด้วยแน่นอน</span>
+            <span>🥰💖</span>
+          </button>
+
+          <!-- Playful runaway reject button -->
+          <button class="btn-reject" id="btnReject">
+            ไม่ว่างหรอก แบร่ 😜
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================================================
+       STAGE 3: SUCCESS CELEBRATION MODAL
+       =================================================== -->
+  <div class="celebration-overlay" id="celebrationOverlay">
+    <div class="celebration-box">
+      <div style="font-size: 3.5rem; margin-bottom: 8px;">🎉🐱🍿</div>
+      <h2>เย้ๆๆ ดีใจที่สุดเลยยย!</h2>
+      <p>
+        ตกลงแล้วห้ามคืนคำเด็ดขาดนะ! เกี่ยวก้อยสัญญาแล้ว 🤙💖<br>
+        แคปภาพนี้ หรือทักแชทมาล็อกวันเวลากับเราได้เลยนะงับ! 🥰✨
+      </p>
+
+      <div class="share-actions">
+        <button class="btn-copy" id="btnCopyText" style="background: linear-gradient(135deg, #ff6584 0%, #ee3a65 100%); color: #fff; border: none; padding: 14px 20px; font-size: 1.05rem; box-shadow: 0 6px 18px rgba(238, 58, 101, 0.35);">
+          📋 คัดลอกข้อความน่ารักๆ ไปตอบในแชท 💌
+        </button>
+        <button class="btn-copy" style="background: transparent; border-color: transparent; color: #884b57;" onclick="closeModal()">
+          ปิดหน้านี้
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast-msg" id="toastMsg">คัดลอกข้อความแล้วน้า! 💌</div>
+
+  <script>
+    /* ===================================================
+       AUDIO SYNTHESIZER (Web Audio API - No external files)
+       =================================================== */
+    let audioCtx = null;
+    let soundEnabled = true;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    // Play cute chime sound
+    function playChime(freq = 523.25, type = 'sine', duration = 0.3) {
+      if (!soundEnabled) return;
+      try {
+        initAudio();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    // Play cheerful melody when letter finishes loading
+    function playFanfare() {
+      if (!soundEnabled) return;
+      const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+      notes.forEach((note, index) => {
+        setTimeout(() => {
+          playChime(note, 'triangle', 0.45);
+        }, index * 120);
+      });
+    }
+
+    // Play pop sound on button action
+    function playPop() {
+      if (!soundEnabled) return;
+      try {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.1);
+      } catch(e){}
+    }
+
+    // Sound toggle button
+    const soundBtn = document.getElementById('soundBtn');
+    soundBtn.addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      soundBtn.textContent = soundEnabled ? '🔔' : '🔕';
+      showToast(soundEnabled ? 'เปิดเสียงเอฟเฟกต์แล้ว 🔔' : 'ปิดเสียงเอฟเฟกต์แล้ว 🔕');
+    });
+
+    /* ===================================================
+       FLOATING BACKGROUND PARTICLES
+       =================================================== */
+    const bgContainer = document.getElementById('bg-decorations');
+    const heartSymbols = ['💖', '💕', '💗', '🌸', '✨', '🐾', '🎀'];
+
+    function createBgParticles() {
+      for (let i = 0; i < 24; i++) {
+        const heart = document.createElement('div');
+        heart.className = 'heart-particle';
+        heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+        heart.style.left = Math.random() * 100 + 'vw';
+        heart.style.animationDuration = (8 + Math.random() * 8) + 's';
+        heart.style.animationDelay = (Math.random() * 6) + 's';
+        heart.style.fontSize = (0.9 + Math.random() * 1.2) + 'rem';
+        bgContainer.appendChild(heart);
+
+        const sparkle = document.createElement('div');
+        sparkle.className = 'sparkle';
+        sparkle.style.left = Math.random() * 100 + 'vw';
+        sparkle.style.top = Math.random() * 100 + 'vh';
+        sparkle.style.animationDelay = (Math.random() * 3) + 's';
+        bgContainer.appendChild(sparkle);
+      }
+    }
+    createBgParticles();
+
+    /* ===================================================
+       STAGE 1: 10-SECOND LOADING LOGIC
+       =================================================== */
+    const TOTAL_DURATION_MS = 10000; // Exactly 10 seconds as requested!
+    const UPDATE_INTERVAL_MS = 50;
+
+    const percentNumber = document.getElementById('percentNumber');
+    const progressFill = document.getElementById('progressFill');
+    const progressOverlayText = document.getElementById('progressOverlayText');
+    const loadingStatusText = document.getElementById('loadingStatusText');
+    const loadingSubtext = document.getElementById('loadingSubtext');
+
+    const loadingStage = document.getElementById('loadingStage') || document.getElementById('loading-stage');
+    const invitationStage = document.getElementById('invitationStage') || document.getElementById('invitation-stage');
+
+    let startTime = null;
+
+    // Sweet dynamic status changes based on progress percentage
+    function updateLoadingText(percent) {
+      if (percent < 20) {
+        loadingStatusText.innerHTML = `กำลังเปิดซองจดหมายชวนพี่... <span class="percent-number">${percent}%</span>`;
+        loadingSubtext.innerHTML = `<span>รอแป๊บนึงน้า มีเรื่องอยากชวน</span> <span style="font-size:1.25rem;">🥺💌</span>`;
+      } else if (percent < 45) {
+        loadingStatusText.innerHTML = `กำลังหยิบตั๋วหนังออกมาจากซอง... <span class="percent-number">${percent}%</span>`;
+        loadingSubtext.innerHTML = `<span>กำลังเลือกที่นั่งที่ดีที่สุดข้างๆ พี่</span> <span style="font-size:1.25rem;">🎟️✨</span>`;
+      } else if (percent < 70) {
+        loadingStatusText.innerHTML = `กำลังสั่งป๊อปคอร์นรอไว้ให้... <span class="percent-number">${percent}%</span>`;
+        loadingSubtext.innerHTML = `<span>พี่ชอบรสหวานหรือรสชีสน้า?</span> <span style="font-size:1.25rem;">🍿🥤</span>`;
+      } else if (percent < 95) {
+        loadingStatusText.innerHTML = `ตื่นเต้นจัง กำลังรวบรวมความกล้า... <span class="percent-number">${percent}%</span>`;
+        loadingSubtext.innerHTML = `<span>จะยอมไปด้วยกันไหมน้า... ลุ้นจัง</span> <span style="font-size:1.25rem;">😳💓</span>`;
+      } else {
+        loadingStatusText.innerHTML = `แต่นแต๊น! ซองจดหมายเปิดออกแล้ว! <span class="percent-number">100%</span>`;
+        loadingSubtext.innerHTML = `<span>พร้อมเปิดอ่านแล้วจ้า!</span> <span style="font-size:1.25rem;">✨🎉</span>`;
+      }
+    }
+
+    // Play subtle tick sounds occasionally while loading
+    let lastTickPercent = 0;
+
+    function runLoading(timestamp) {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      let progress = Math.min(elapsed / TOTAL_DURATION_MS, 1.0);
+      let percent = Math.floor(progress * 100);
+
+      // Smooth cubic ease-out so it starts with a nice pace and lands smoothly at 100%
+      progressFill.style.width = percent + '%';
+      progressOverlayText.textContent = percent + '%';
+      updateLoadingText(percent);
+
+      if (percent - lastTickPercent >= 20) {
+        lastTickPercent = percent;
+        playChime(440 + percent * 3, 'sine', 0.15);
+      }
+
+      if (progress < 1.0) {
+        requestAnimationFrame(runLoading);
+      } else {
+        // Completed 10 seconds!
+        finishLoading();
+      }
+    }
+
+    function finishLoading() {
+      playFanfare();
+      triggerConfetti(30);
+
+      setTimeout(() => {
+        // Transition from loading to invitation card
+        loadingStage.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        loadingStage.style.opacity = '0';
+        loadingStage.style.transform = 'scale(0.9)';
+
+        setTimeout(() => {
+          loadingStage.style.display = 'none';
+          invitationStage.style.display = 'flex';
+        }, 500);
+      }, 700);
+    }
+
+    // Start loading on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      // Small delay for initial pop-up effect
+      setTimeout(() => {
+        playChime(600, 'triangle', 0.3);
+        requestAnimationFrame(runLoading);
+      }, 400);
+    });
+
+    /* ===================================================
+       MOVIE SELECTION INTERACTION
+       =================================================== */
+    let currentMovieChoice = 'เรื่องอะไรก็ได้ที่พี่อยากดูเลย 🎞️';
+    function selectMovie(el, name) {
+      document.querySelectorAll('.tag-item').forEach(tag => tag.classList.remove('active'));
+      el.classList.add('active');
+      currentMovieChoice = name;
+      document.getElementById('selectedMovieText').textContent = name;
+      playPop();
+    }
+
+    /* ===================================================
+       PLAYFUL RUNAWAY REJECT BUTTON
+       =================================================== */
+    const btnReject = document.getElementById('btnReject');
+    let rejectAttempts = 0;
+    const rejectTexts = [
+      "ไม่ว่างหรอก แบร่ 😜",
+      "แน่ใจเหรอออ? คิดใหม่อีกทีน้า 🥺",
+      "งื้อออ ปุ่มนี้กดยากมากเลย 👉👈",
+      "อย่าใจร้ายเลยนะ ไปดูด้วยกันเถอะ 🐱💖",
+      "ปุ่มนี้ยอมแพ้แล้ว ไปดูด้วยกันน้าาา 🥰"
+    ];
+
+    function dodgeButton(e) {
+      if (e) e.preventDefault();
+      rejectAttempts++;
+      playPop();
+
+      // Random playful offset within reasonable mobile & desktop bounds
+      const maxDistance = Math.min(window.innerWidth * 0.25, 90);
+      const randomX = (Math.random() - 0.5) * maxDistance * 2;
+      const randomY = (Math.random() - 0.5) * 60;
+
+      btnReject.style.transform = `translate(${randomX}px, ${randomY}px) scale(0.95)`;
+      btnReject.textContent = rejectTexts[Math.min(rejectAttempts, rejectTexts.length - 1)];
+
+      if (rejectAttempts >= 4) {
+        // Transform the reject button into a sweet surrender button!
+        btnReject.style.background = '#ffe5ec';
+        btnReject.style.color = '#e63968';
+        btnReject.style.borderColor = '#ff82a3';
+        btnReject.onclick = () => {
+          acceptInvitation();
+        };
+      }
+    }
+
+    // Dodge on hover (desktop) and touch/click (mobile)
+    btnReject.addEventListener('mouseenter', dodgeButton);
+    btnReject.addEventListener('touchstart', dodgeButton, { passive: false });
+    btnReject.addEventListener('click', (e) => {
+      if (rejectAttempts < 4) {
+        dodgeButton(e);
+      } else {
+        acceptInvitation();
+      }
+    });
+
+    /* ===================================================
+       ACCEPT INVITATION & CELEBRATION
+       =================================================== */
+    const btnAccept = document.getElementById('btnAccept');
+    const celebrationOverlay = document.getElementById('celebrationOverlay');
+
+    function acceptInvitation() {
+      playFanfare();
+      triggerConfetti(90);
+      celebrationOverlay.style.display = 'flex';
+    }
+
+    btnAccept.addEventListener('click', acceptInvitation);
+
+    function closeModal() {
+      celebrationOverlay.style.display = 'none';
+      playPop();
+    }
+
+    /* Copy Sweet Message to Clipboard */
+    const btnCopyText = document.getElementById('btnCopyText');
+    btnCopyText.addEventListener('click', () => {
+      const copyMsg = `ตกลงงง! ไปดูหนังด้วยกันนะ 🥰🎬 เราเลือกดู: ${currentMovieChoice} นัดวันเวลากันเล้ยยย! 🍿💖`;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(copyMsg).then(() => {
+          showToast('คัดลอกข้อความน่ารักๆ เรียบร้อยแล้ว! 💌');
+        }).catch(() => {
+          fallbackCopy(copyMsg);
+        });
+      } else {
+        fallbackCopy(copyMsg);
+      }
+      playPop();
+    });
+
+    function fallbackCopy(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showToast('คัดลอกข้อความแล้วน้า! 💌');
+    }
+
+    function showToast(text) {
+      const toast = document.getElementById('toastMsg');
+      toast.textContent = text;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2500);
+    }
+
+    /* ===================================================
+       CONFETTI CANNON ENGINE
+       =================================================== */
+    const canvas = document.getElementById('confetti-canvas');
+    const ctx = canvas.getContext('2d');
+    let confettiList = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function triggerConfetti(count = 60) {
+      const colors = ['#ff4d79', '#ff809b', '#ffaec0', '#ffccd8', '#ffd166', '#fff'];
+      for (let i = 0; i < count; i++) {
+        confettiList.push({
+          x: window.innerWidth * (0.3 + Math.random() * 0.4),
+          y: window.innerHeight * 0.6,
+          vx: (Math.random() - 0.5) * 14,
+          vy: -Math.random() * 16 - 6,
+          size: 6 + Math.random() * 8,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          rotationSpeed: (Math.random() - 0.5) * 12,
+          isHeart: Math.random() > 0.4,
+          opacity: 1
+        });
+      }
+    }
+
+    function drawHeart(ctx, x, y, size, color) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      const topCurveHeight = size * 0.3;
+      ctx.moveTo(0, topCurveHeight);
+      ctx.bezierCurveTo(0, 0, -size / 2, 0, -size / 2, topCurveHeight);
+      ctx.bezierCurveTo(-size / 2, (size + topCurveHeight) / 2, 0, (size + topCurveHeight) / 1.4, 0, size);
+      ctx.bezierCurveTo(0, (size + topCurveHeight) / 1.4, size / 2, (size + topCurveHeight) / 2, size / 2, topCurveHeight);
+      ctx.bezierCurveTo(size / 2, 0, 0, 0, 0, topCurveHeight);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function updateConfetti() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = confettiList.length - 1; i >= 0; i--) {
+        const p = confettiList[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.4; // gravity
+        p.rotation += p.rotationSpeed;
+        p.opacity -= 0.008;
+
+        ctx.globalAlpha = Math.max(p.opacity, 0);
+
+        if (p.isHeart) {
+          drawHeart(ctx, p.x, p.y, p.size * 1.4, p.color);
+        } else {
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rotation * Math.PI) / 180);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+          ctx.restore();
+        }
+
+        if (p.opacity <= 0 || p.y > window.innerHeight + 50) {
+          confettiList.splice(i, 1);
+        }
+      }
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(updateConfetti);
+    }
+    requestAnimationFrame(updateConfetti);
+  </script>
+</body>
+</html>
